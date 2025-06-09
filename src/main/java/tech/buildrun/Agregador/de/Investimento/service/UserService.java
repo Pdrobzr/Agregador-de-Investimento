@@ -1,9 +1,11 @@
 package tech.buildrun.Agregador.de.Investimento.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
+import tech.buildrun.Agregador.de.Investimento.infra.SecurityConfig;
 import tech.buildrun.Agregador.de.Investimento.repository.UserRepository;
 
 import java.util.List;
@@ -16,8 +18,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
     public UUID createUser(RecordUserDTO createUserDTO) {
-        var entity = new User(createUserDTO.userName(), createUserDTO.email(), createUserDTO.password());
+
+        var hashSenha = passwordEncoder.encode(createUserDTO.password());
+
+        var entity = new User(createUserDTO.userName(), createUserDTO.email(), hashSenha);
 
         var userCreated = userRepository.save(entity);
 

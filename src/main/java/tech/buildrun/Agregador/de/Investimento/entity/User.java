@@ -2,6 +2,7 @@ package tech.buildrun.Agregador.de.Investimento.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,12 @@ public class User {
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
+    }
+
+    public User(RecordUserDTO recordUserDTO) {
+        this.userName = recordUserDTO.userName();
+        this.email = recordUserDTO.email();
+        this.password = recordUserDTO.password();
     }
 
     public User(UUID userId, String userName, String email, String password, LocalDateTime createdAt, List<Investment> investments) {
