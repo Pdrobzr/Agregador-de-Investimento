@@ -3,7 +3,9 @@ package tech.buildrun.Agregador.de.Investimento.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tech.buildrun.Agregador.de.Investimento.dto.RecordLoginDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
+import tech.buildrun.Agregador.de.Investimento.dto.ResponseLoginDTO;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
 import tech.buildrun.Agregador.de.Investimento.infra.SecurityConfig;
 import tech.buildrun.Agregador.de.Investimento.repository.UserRepository;
@@ -21,6 +23,8 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private TokenService tokenService;
 
     public UUID createUser(RecordUserDTO createUserDTO) {
 
@@ -32,6 +36,15 @@ public class UserService {
 
         return userCreated.getUserId();
 
+    }
+
+    public ResponseLoginDTO loginUser(RecordLoginDTO recordLoginDTO) {
+        User user = userRepository.findByEmail(recordLoginDTO.email()).orElseThrow(() -> new RuntimeException("Email inválido!"));
+        if(passwordEncoder.matches(recordLoginDTO.password(), user.getPassword())) {
+            String token = tokenService.generateToken(user);
+            return new ResponseLoginDTO(user.getUserName(), token);
+        }
+        return null;
     }
 
     public List<User> listUsers() {

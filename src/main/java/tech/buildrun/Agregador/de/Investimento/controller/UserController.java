@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.buildrun.Agregador.de.Investimento.dto.RecordLoginDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
+import tech.buildrun.Agregador.de.Investimento.dto.ResponseLoginDTO;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
 import tech.buildrun.Agregador.de.Investimento.service.UserService;
 
@@ -24,6 +26,18 @@ public class UserController {
         var userCreated = userService.createUser(createUserDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
+
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ResponseLoginDTO> login(@RequestBody RecordLoginDTO recordLoginDTO) {
+        ResponseLoginDTO responseLoginDTO = userService.loginUser(recordLoginDTO);
+
+        if(responseLoginDTO != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(responseLoginDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
     }
 
