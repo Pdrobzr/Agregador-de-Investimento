@@ -12,12 +12,13 @@ import java.util.UUID;
 @Table(name = "tb_users")
 public class User {
 
-    public User(UUID userId, String userName, String email, String password, LocalDateTime createdAt) {
+    public User(UUID userId, String userName, String email, String password, LocalDateTime createdAt, Role role) {
         this.userId = userId;
         this.userName = userName;
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
+        this.role = role;
     }
 
     public User(RecordUserDTO recordUserDTO) {
@@ -35,10 +36,11 @@ public class User {
         this.investments = investments;
     }
 
-    public User(String userName, String email, String password) {
+    public User(String userName, String email, String password, Role role) {
         this.userName = userName;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public User() {
@@ -59,6 +61,10 @@ public class User {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Investment> investments;
@@ -101,5 +107,21 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public List<Investment> getInvestments() {
+        return investments;
+    }
+
+    public void setInvestments(List<Investment> investments) {
+        this.investments = investments;
     }
 }

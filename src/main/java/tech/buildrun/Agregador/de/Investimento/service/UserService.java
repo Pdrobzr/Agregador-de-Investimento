@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordLoginDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.ResponseLoginDTO;
+import tech.buildrun.Agregador.de.Investimento.entity.Role;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
 import tech.buildrun.Agregador.de.Investimento.infra.SecurityConfig;
 import tech.buildrun.Agregador.de.Investimento.repository.UserRepository;
@@ -30,7 +31,7 @@ public class UserService {
 
         var hashSenha = passwordEncoder.encode(createUserDTO.password());
 
-        var entity = new User(createUserDTO.userName(), createUserDTO.email(), hashSenha);
+        var entity = new User(createUserDTO.userName(), createUserDTO.email(), hashSenha, new Role(2));
 
         var userCreated = userRepository.save(entity);
 
@@ -63,7 +64,7 @@ public class UserService {
         Optional<User> userExists = userRepository.findById(id);
 
         if(userExists.isPresent()) {
-            User user = new User(id, updateUserDTO.userName(), updateUserDTO.email(), updateUserDTO.password(), userExists.get().getCreatedAt());
+            User user = new User(id, updateUserDTO.userName(), updateUserDTO.email(), updateUserDTO.password(), userExists.get().getCreatedAt(), userExists.get().getRole());
             userRepository.save(user);
         }
     }
