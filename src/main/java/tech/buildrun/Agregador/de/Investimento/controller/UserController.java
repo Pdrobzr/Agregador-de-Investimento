@@ -3,6 +3,7 @@ package tech.buildrun.Agregador.de.Investimento.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordLoginDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
@@ -41,8 +42,10 @@ public class UserController {
 
     }
 
-    @GetMapping
+    @GetMapping("/admin")
     public ResponseEntity<List<User>> listUsers() {
+
+
         List<User> users = userService.listUsers();
 
         return ResponseEntity.status(HttpStatus.OK).body(users);
