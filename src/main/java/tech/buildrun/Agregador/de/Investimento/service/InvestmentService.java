@@ -40,8 +40,7 @@ public class InvestmentService {
 
     public List<Investment> getInvestimentsByUserId(UUID userId) {
         var getUser = userRepository.findById(userId);
-
-        List<Investment> investments = investmentRepository.findByUser(getUser.get());
+        List<Investment> investments = getUser.get().getInvestments();
 
         return investments;
     }

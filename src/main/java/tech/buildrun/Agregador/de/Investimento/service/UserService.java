@@ -43,7 +43,7 @@ public class UserService {
         User user = userRepository.findByEmail(recordLoginDTO.email()).orElseThrow(() -> new RuntimeException("Email inválido!"));
         if(passwordEncoder.matches(recordLoginDTO.password(), user.getPassword())) {
             String token = tokenService.generateToken(user);
-            return new ResponseLoginDTO(user.getUserName(), token);
+            return new ResponseLoginDTO(user.getUserId(), token);
         }
         return null;
     }

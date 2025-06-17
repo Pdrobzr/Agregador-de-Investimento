@@ -10,6 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface InvestmentRepository extends JpaRepository<Investment, UUID> {
-    List<Investment> findByUser(User user);
+
 }
 

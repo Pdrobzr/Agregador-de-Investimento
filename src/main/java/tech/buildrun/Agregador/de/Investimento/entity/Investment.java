@@ -1,5 +1,6 @@
 package tech.buildrun.Agregador.de.Investimento.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -15,7 +16,8 @@ public class Investment {
     private Double amount;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false) // Define a coluna de chave estrangeira
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
 

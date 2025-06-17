@@ -1,5 +1,6 @@
 package tech.buildrun.Agregador.de.Investimento.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
@@ -66,7 +67,8 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
     private List<Investment> investments;
 
     public UUID getUserId() {

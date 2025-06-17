@@ -18,10 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
-//    @Autowired
-//    private CustomUserDetailsService userDetailsService;
-
+    
     @Autowired
     SecurityFilter securityFilter;
 
