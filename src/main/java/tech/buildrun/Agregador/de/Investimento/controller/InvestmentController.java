@@ -28,15 +28,15 @@ public class InvestmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Investment>> getAllInvestments() {
-        List<Investment> investments = investmentService.getAllInvestments();
+    public ResponseEntity<List> getAllInvestments() {
+        List investments = investmentService.getAllInvestments();
 
         return ResponseEntity.status(HttpStatus.OK).body(investments);
     }
 
     @GetMapping("/{idUser}")
-    public ResponseEntity<List<Investment>> getInvestmentsByUserId(@PathVariable UUID idUser) {
-        List<Investment> investments = investmentService.getInvestimentsByUserId(idUser);
+    public ResponseEntity<List> getInvestmentsByUserId(@PathVariable UUID idUser) {
+        List investments = investmentService.getInvestimentsByUserId(idUser);
 
         return ResponseEntity.status(HttpStatus.OK).body(investments);
     }

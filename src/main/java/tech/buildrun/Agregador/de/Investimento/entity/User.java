@@ -67,7 +67,7 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @JsonManagedReference
+//    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Investment> investments;
 

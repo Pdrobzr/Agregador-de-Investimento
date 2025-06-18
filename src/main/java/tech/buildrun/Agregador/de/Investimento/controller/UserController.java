@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordLoginDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.ResponseLoginDTO;
+import tech.buildrun.Agregador.de.Investimento.dto.ResponseUserDTO;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
 import tech.buildrun.Agregador.de.Investimento.service.UserService;
 
@@ -43,10 +44,10 @@ public class UserController {
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<List<User>> listUsers() {
+    public ResponseEntity<List<ResponseUserDTO>> listUsers() {
 
 
-        List<User> users = userService.listUsers();
+        List<ResponseUserDTO> users = userService.listUsers();
 
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
@@ -65,7 +66,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<User>> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseUserDTO> getUserById(@PathVariable UUID id) {
         var user = userService.getUserById(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(user);

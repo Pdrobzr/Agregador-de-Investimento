@@ -3,6 +3,7 @@ package tech.buildrun.Agregador.de.Investimento.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordInvestmentDTO;
+import tech.buildrun.Agregador.de.Investimento.dto.ResponseInvestmentsDTO;
 import tech.buildrun.Agregador.de.Investimento.entity.Investment;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
 import tech.buildrun.Agregador.de.Investimento.repository.InvestmentRepository;
@@ -32,18 +33,20 @@ public class InvestmentService {
 
     }
 
-    public List<Investment> getAllInvestments() {
-        List<Investment> investments = investmentRepository.findAll();
+    public List<ResponseInvestmentsDTO> getAllInvestments() {
 
-        return investments;
+
+        return investmentRepository.findAll().stream().map(investment ->
+                new ResponseInvestmentsDTO(investment.getIdInvestment(), investment.getAmount(), investment.getUser().getUserId())).toList();
     }
 
-    public List<Investment> getInvestimentsByUserId(UUID userId) {
+    public List<ResponseInvestmentsDTO> getInvestimentsByUserId(UUID userId) {
         var getUser = userRepository.findById(userId);
-        List<Investment> investments = getUser.get().getInvestments();
-
-        return investments;
+        return getUser.get().getInvestments().stream().map(investment ->
+                new ResponseInvestmentsDTO(investment.getIdInvestment(), investment.getAmount(), investment.getUser().getUserId())).toList();
     }
+
+
 
     public void deleteInvestment(UUID id) {
         var userExists = investmentRepository.existsById(id);

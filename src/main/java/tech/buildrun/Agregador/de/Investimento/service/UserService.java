@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordLoginDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.ResponseLoginDTO;
+import tech.buildrun.Agregador.de.Investimento.dto.ResponseUserDTO;
 import tech.buildrun.Agregador.de.Investimento.entity.Role;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
 import tech.buildrun.Agregador.de.Investimento.infra.SecurityConfig;
@@ -48,8 +49,9 @@ public class UserService {
         return null;
     }
 
-    public List<User> listUsers() {
-        return userRepository.findAll();
+    public List<ResponseUserDTO> listUsers() {
+        return userRepository.findAll().stream().map(user -> new ResponseUserDTO(user.getUserId(), user.getUserName(),
+                user.getEmail(), user.getPassword(), user.getCreatedAt(), user.getRole().getRoleName())).toList();
     }
 
     public void deleteUser(UUID id) {
@@ -69,7 +71,10 @@ public class UserService {
         }
     }
 
-    public Optional<User> getUserById(UUID id) {
-        return userRepository.findById(id);
+    public ResponseUserDTO getUserById(UUID id) {
+        Optional <User> findUser = userRepository.findById(id);
+        User user = findUser.get();
+        return new ResponseUserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPassword(),
+                user.getCreatedAt(), user.getRole().getRoleName());
     }
 }
