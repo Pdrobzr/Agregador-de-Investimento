@@ -102,7 +102,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + getRole().getRoleName()));
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
     }
 
     public String getPassword() {
