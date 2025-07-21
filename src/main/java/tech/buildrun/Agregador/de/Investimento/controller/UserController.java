@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import tech.buildrun.Agregador.de.Investimento.dto.RecordLoginDTO;
-import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
-import tech.buildrun.Agregador.de.Investimento.dto.ResponseLoginDTO;
-import tech.buildrun.Agregador.de.Investimento.dto.ResponseUserDTO;
+import tech.buildrun.Agregador.de.Investimento.dto.*;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
 import tech.buildrun.Agregador.de.Investimento.service.UserService;
 
@@ -60,9 +57,15 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable UUID id, @RequestBody RecordUserDTO updateUserDTO) {
+    public ResponseEntity<Object> updateUser(@PathVariable UUID id, @RequestBody UpdateUserDTO updateUserDTO) {
         userService.updateUser(id, updateUserDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Usuário atualizado com sucesso!");
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Object> updatePassword(@PathVariable UUID id, @RequestBody UpdatePasswordDTO updatePasswordDTO) {
+        userService.updatePassword(id, updatePasswordDTO);
+        return ResponseEntity.status(HttpStatus.OK).body("Senha alterada com sucesso!");
     }
 
     @GetMapping("/{id}")
