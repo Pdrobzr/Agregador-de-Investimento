@@ -42,17 +42,23 @@ public class InvestmentService {
 
     public List<ResponseInvestmentsDTO> getInvestimentsByUserId(UUID userId) {
         var getUser = userRepository.findById(userId);
-        return getUser.get().getInvestments().stream().map(investment ->
-                new ResponseInvestmentsDTO(investment.getIdInvestment(), investment.getAmount(), investment.getUser().getUserId())).toList();
+        if(getUser.isPresent()) {
+            return getUser.get().getInvestments().stream().map(investment ->
+                    new ResponseInvestmentsDTO(investment.getIdInvestment(), investment.getAmount(), investment.getUser().getUserId())).toList();
+        } else {
+            throw new RuntimeException("Usuário não encontrado!");
+        }
     }
 
 
 
     public void deleteInvestment(UUID id) {
-        var userExists = investmentRepository.existsById(id);
+        boolean investmentExists = investmentRepository.existsById(id);
 
-        if(userExists) {
+        if(investmentExists) {
             investmentRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Investimento não encontrado!");
         }
     }
 
@@ -65,6 +71,8 @@ public class InvestmentService {
             Investment updatedInvestment = new Investment(id, recordInvestmentDTO.amount(), getInvestment.getUser());
 
             investmentRepository.save(updatedInvestment);
+        } else {
+            throw  new RuntimeException("Investimento não encontrado!");
         }
 
     }

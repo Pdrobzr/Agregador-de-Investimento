@@ -69,6 +69,8 @@ public class UserService {
         if (userExists.isPresent()) {
             User user = new User(id, updateUserDTO.userName(), updateUserDTO.email(), userExists.get().getPassword(), userExists.get().getCreatedAt(), userExists.get().getRole());
             userRepository.save(user);
+        } else {
+            throw new RuntimeException("Usuário não encontrado!");
         }
     }
 
@@ -86,8 +88,12 @@ public class UserService {
 
     public ResponseUserDTO getUserById(UUID id) {
         Optional<User> findUser = userRepository.findById(id);
-        User user = findUser.get();
-        return new ResponseUserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPassword(),
-                user.getCreatedAt(), user.getRole().getRoleName());
+        if (findUser.isPresent()) {
+            User user = findUser.get();
+            return new ResponseUserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPassword(),
+                    user.getCreatedAt(), user.getRole().getRoleName());
+        } else {
+            throw new RuntimeException("Erro! Usuário não encontrado!");
+        }
     }
 }
