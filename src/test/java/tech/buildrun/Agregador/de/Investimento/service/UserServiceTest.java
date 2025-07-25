@@ -29,12 +29,12 @@ class UserServiceTest {
     @Mock
     UserRepository userRepository;
 
-    String idString = "123e4567-e89b-12d3-a456-426614174000";
+    UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
     @BeforeEach
     public void setUp() {
-        User user = new User(UUID.fromString(this.idString),"Pedro", "pedro@gmail.com", "123", new Role(2));
-        lenient().when(userRepository.findById(UUID.fromString(this.idString))).thenReturn(Optional.of(user));
+        User user = new User((this.id),"Pedro", "pedro@gmail.com", "123", new Role(2));
+        lenient().when(userRepository.findById(this.id)).thenReturn(Optional.of(user));
         lenient().when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
     }
 
@@ -51,9 +51,14 @@ class UserServiceTest {
 
     @Test
     @DisplayName("Deve retornar um usuário com base no id")
-    public void returnUserById() {
+    public void getUserById() {
+        ResponseUserDTO userResponse = userService.getUserById(id);
+        assertNotNull(userResponse);
+    }
 
-        var usuarioResponse = userService.getUserById(UUID.fromString(this.idString));
-        assertNotNull(usuarioResponse);
+    @Test
+    @DisplayName("Deve retornar exceção de usuário não encontrado!")
+    public void getUserByIdButUserNotExists() {
+        assertThrows(RuntimeException.class, () -> userService.getUserById(UUID.randomUUID()));
     }
 }
