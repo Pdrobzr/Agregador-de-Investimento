@@ -27,6 +27,14 @@ public class User implements UserDetails {
         this.role = role;
     }
 
+    public User(UUID userId, String userName, String email, String password, Role role) {
+        this.userId = userId;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public User(RecordUserDTO recordUserDTO) {
         this.userName = recordUserDTO.userName();
         this.email = recordUserDTO.email();
