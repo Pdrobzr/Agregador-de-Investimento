@@ -8,10 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import tech.buildrun.Agregador.de.Investimento.dto.RecordLoginDTO;
-import tech.buildrun.Agregador.de.Investimento.dto.RecordUserDTO;
-import tech.buildrun.Agregador.de.Investimento.dto.ResponseLoginDTO;
-import tech.buildrun.Agregador.de.Investimento.dto.ResponseUserDTO;
+import tech.buildrun.Agregador.de.Investimento.dto.*;
 import tech.buildrun.Agregador.de.Investimento.entity.Role;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
 import tech.buildrun.Agregador.de.Investimento.repository.UserRepository;
@@ -47,7 +44,6 @@ class UserServiceTest {
         lenient().when(userRepository.findById(this.id)).thenReturn(Optional.of(user));
         lenient().when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         lenient().when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
-        lenient().when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
     }
 
     @Test
@@ -75,6 +71,7 @@ class UserServiceTest {
         User user = new User("Pedro", "pedro@gmail.com", "123", new Role(2));
         user.setUserId(this.id);
 
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(tokenService.generateToken(any(User.class))).thenReturn("mocked_token");
 
         ResponseLoginDTO responseLoginDTO = userService.loginUser(loginDTO);
@@ -110,6 +107,46 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Deve atualizar usuário com sucesso")
+    public void shouldUpdateUserSuccessfully() {
+        UpdateUserDTO userDTO = new UpdateUserDTO("teste@gmail.com", "123");
+
+        userService.updateUser(this.id, userDTO);
+
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Deve falhar ao encontrar usuário para atualizar")
+    public void shouldThrowExceptionWhenUpdatingNonexistentUser() {
+        UpdateUserDTO userDTO = new UpdateUserDTO("teste@gmail.com", "123");
+
+        assertThrows(RuntimeException.class, () -> userService.updateUser(UUID.randomUUID(), userDTO));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar a senha do usuario com sucesso")
+    public void shouldUpdatePasswordSuccessfully() {
+        UpdatePasswordDTO updatePasswordDTO = new UpdatePasswordDTO("oldPassword", "newPassword");
+
+        when(passwordEncoder.encode(anyString())).thenReturn(anyString());
+
+        userService.updatePassword(this.id, updatePasswordDTO);
+
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Deve dar errado ao tentar atualizar a senha")
+    public void shouldThrowExceptionOnPasswordMismatch() {
+        UpdatePasswordDTO updatePasswordDTO = new UpdatePasswordDTO("wrongPassword", "newPassword");
+
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(RuntimeException.class, () -> userService.updatePassword(this.id, updatePasswordDTO));
+    }
+
+    @Test
     @DisplayName("Deve retornar uma lista com apenas um usuário")
     public void shouldReturnListOfUsers() {
         List<ResponseUserDTO> usuarios = userService.listUsers();
@@ -126,7 +163,6 @@ class UserServiceTest {
         ResponseUserDTO userResponse = userService.getUserById(id);
         assertNotNull(userResponse);
     }
-
 
     @Test
     @DisplayName("Deve retornar exceção de usuário não encontrado!")
