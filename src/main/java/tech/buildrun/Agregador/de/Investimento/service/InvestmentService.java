@@ -6,6 +6,7 @@ import tech.buildrun.Agregador.de.Investimento.dto.RecordInvestmentDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.ResponseInvestmentsDTO;
 import tech.buildrun.Agregador.de.Investimento.entity.Investment;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
+import tech.buildrun.Agregador.de.Investimento.exceptions.UserNotFoundException;
 import tech.buildrun.Agregador.de.Investimento.repository.InvestmentRepository;
 import tech.buildrun.Agregador.de.Investimento.repository.UserRepository;
 
@@ -24,6 +25,10 @@ public class InvestmentService {
 
     public UUID createInvestment(UUID idUser, RecordInvestmentDTO recordInvestmentDTO) {
         Optional<User> user = userRepository.findById(idUser);
+
+        if(user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
 
         var newInvestment = new Investment(recordInvestmentDTO.amount(), user.get());
 
@@ -49,8 +54,6 @@ public class InvestmentService {
             throw new RuntimeException("Usuário não encontrado!");
         }
     }
-
-
 
     public void deleteInvestment(UUID id) {
         boolean investmentExists = investmentRepository.existsById(id);

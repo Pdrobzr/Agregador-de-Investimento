@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tech.buildrun.Agregador.de.Investimento.dto.*;
 import tech.buildrun.Agregador.de.Investimento.entity.Role;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
+import tech.buildrun.Agregador.de.Investimento.exceptions.EmailAlreadyRegisteredException;
 import tech.buildrun.Agregador.de.Investimento.exceptions.InvalidPasswordException;
 import tech.buildrun.Agregador.de.Investimento.exceptions.UserNotFoundException;
 import tech.buildrun.Agregador.de.Investimento.infra.SecurityConfig;
@@ -29,17 +30,20 @@ public class UserService {
 
     public UUID createUser(RecordUserDTO createUserDTO) {
 
+        Optional<User> user = userRepository.findByEmail(createUserDTO.email());
+
+        if(user.isPresent()) {
+            throw new EmailAlreadyRegisteredException();
+        }
         var hashSenha = passwordEncoder.encode(createUserDTO.password());
-
         var entity = new User(createUserDTO.userName(), createUserDTO.email(), hashSenha, new Role(2));
-
         var userCreated = userRepository.save(entity);
-
         return userCreated.getUserId();
 
     }
 
     public ResponseLoginDTO loginUser(RecordLoginDTO recordLoginDTO) {
+
         User user = userRepository.findByEmail(recordLoginDTO.email()).orElseThrow(() -> new UserNotFoundException("Email não encontrado!"));
         if (passwordEncoder.matches(recordLoginDTO.password(), user.getPassword())) {
             String token = tokenService.generateToken(user);
@@ -47,7 +51,6 @@ public class UserService {
         } else {
             throw new InvalidPasswordException();
         }
-
     }
 
     public List<ResponseUserDTO> listUsers() {
