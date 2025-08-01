@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import tech.buildrun.Agregador.de.Investimento.dto.*;
 import tech.buildrun.Agregador.de.Investimento.entity.Role;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
+import tech.buildrun.Agregador.de.Investimento.exceptions.InvalidPasswordException;
+import tech.buildrun.Agregador.de.Investimento.exceptions.UserNotFoundException;
 import tech.buildrun.Agregador.de.Investimento.infra.SecurityConfig;
 import tech.buildrun.Agregador.de.Investimento.repository.UserRepository;
 
@@ -38,12 +40,12 @@ public class UserService {
     }
 
     public ResponseLoginDTO loginUser(RecordLoginDTO recordLoginDTO) {
-        User user = userRepository.findByEmail(recordLoginDTO.email()).orElseThrow(() -> new RuntimeException("Email inválido!"));
+        User user = userRepository.findByEmail(recordLoginDTO.email()).orElseThrow(() -> new UserNotFoundException("Email não encontrado!"));
         if (passwordEncoder.matches(recordLoginDTO.password(), user.getPassword())) {
             String token = tokenService.generateToken(user);
             return new ResponseLoginDTO(user.getUserId(), token);
         } else {
-            throw new RuntimeException("Senha inválida!");
+            throw new InvalidPasswordException();
         }
 
     }
@@ -59,7 +61,7 @@ public class UserService {
         if (userExists) {
             userRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Usuário não encontrado!");
+            throw new UserNotFoundException();
         }
     }
 
@@ -70,7 +72,7 @@ public class UserService {
             User user = new User(id, updateUserDTO.userName(), updateUserDTO.email(), userExists.get().getPassword(), userExists.get().getCreatedAt(), userExists.get().getRole());
             userRepository.save(user);
         } else {
-            throw new RuntimeException("Usuário não encontrado!");
+            throw new UserNotFoundException();
         }
     }
 
@@ -79,9 +81,9 @@ public class UserService {
         if (passwordEncoder.matches(updatePasswordDTO.oldPassword(), userExists.get().getPassword())) {
             var hashSenha = passwordEncoder.encode(updatePasswordDTO.password());
             userExists.get().setPassword(hashSenha);
-            userRepository.save(userExists.orElseThrow(() -> new RuntimeException("Erro ao encontrar o usuário!")));
+            userRepository.save(userExists.orElseThrow(UserNotFoundException::new));
         } else {
-            throw new RuntimeException("Senha inválida!");
+            throw new InvalidPasswordException();
         }
 
     }
@@ -93,7 +95,7 @@ public class UserService {
             return new ResponseUserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPassword(),
                     user.getCreatedAt(), user.getRole().getRoleName());
         } else {
-            throw new RuntimeException("Erro! Usuário não encontrado!");
+            throw new UserNotFoundException();
         }
     }
 }

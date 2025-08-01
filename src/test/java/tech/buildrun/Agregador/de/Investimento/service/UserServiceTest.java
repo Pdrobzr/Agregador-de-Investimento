@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import tech.buildrun.Agregador.de.Investimento.dto.*;
 import tech.buildrun.Agregador.de.Investimento.entity.Role;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
+import tech.buildrun.Agregador.de.Investimento.exceptions.InvalidPasswordException;
+import tech.buildrun.Agregador.de.Investimento.exceptions.UserNotFoundException;
 import tech.buildrun.Agregador.de.Investimento.repository.UserRepository;
 
 import java.util.Collections;
@@ -81,11 +83,20 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Deve retornar exceção de email inválido")
+    @DisplayName("Deve retornar exceção de email inválido ao tentar realizar o login")
     public void shouldThrowExceptionWhenEmailInvalid() {
         RecordLoginDTO loginDTO = new RecordLoginDTO("invalid@gmail.com", "123");
 
-        assertThrows(RuntimeException.class, () -> userService.loginUser(loginDTO));
+        assertThrows(UserNotFoundException.class, () -> userService.loginUser(loginDTO));
+    }
+
+    @Test
+    @DisplayName("Deve retornar exceção de senha inválida ao tentar realizar o login")
+    public void shouldThrowExceptionWhenPasswordInvalid() {
+        RecordLoginDTO loginDTO = new RecordLoginDTO("pedro@gmail.com", "invalidPassword");
+
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
+        assertThrows(InvalidPasswordException.class, () -> userService.loginUser(loginDTO));
     }
 
     @Test
@@ -103,7 +114,7 @@ class UserServiceTest {
     public void shouldThrowExceptionWhenDeletingNonexistentUser() {
         when(userRepository.existsById(this.id)).thenReturn(false);
 
-        assertThrows(RuntimeException.class, () -> userService.deleteUser(this.id));
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUser(this.id));
     }
 
     @Test
@@ -121,7 +132,7 @@ class UserServiceTest {
     public void shouldThrowExceptionWhenUpdatingNonexistentUser() {
         UpdateUserDTO userDTO = new UpdateUserDTO("teste@gmail.com", "123");
 
-        assertThrows(RuntimeException.class, () -> userService.updateUser(UUID.randomUUID(), userDTO));
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(UUID.randomUUID(), userDTO));
     }
 
     @Test
@@ -129,6 +140,7 @@ class UserServiceTest {
     public void shouldUpdatePasswordSuccessfully() {
         UpdatePasswordDTO updatePasswordDTO = new UpdatePasswordDTO("oldPassword", "newPassword");
 
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(passwordEncoder.encode(anyString())).thenReturn(anyString());
 
         userService.updatePassword(this.id, updatePasswordDTO);
@@ -141,9 +153,7 @@ class UserServiceTest {
     public void shouldThrowExceptionOnPasswordMismatch() {
         UpdatePasswordDTO updatePasswordDTO = new UpdatePasswordDTO("wrongPassword", "newPassword");
 
-        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(RuntimeException.class, () -> userService.updatePassword(this.id, updatePasswordDTO));
+        assertThrows(InvalidPasswordException.class, () -> userService.updatePassword(this.id, updatePasswordDTO));
     }
 
     @Test
@@ -168,6 +178,6 @@ class UserServiceTest {
     @DisplayName("Deve retornar exceção de usuário não encontrado!")
     public void shouldThrowExceptionWhenUserNotFoundById() {
 
-        assertThrows(RuntimeException.class, () -> userService.getUserById(UUID.randomUUID()));
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(UUID.randomUUID()));
     }
 }
