@@ -6,6 +6,7 @@ import tech.buildrun.Agregador.de.Investimento.dto.RecordInvestmentDTO;
 import tech.buildrun.Agregador.de.Investimento.dto.ResponseInvestmentsDTO;
 import tech.buildrun.Agregador.de.Investimento.entity.Investment;
 import tech.buildrun.Agregador.de.Investimento.entity.User;
+import tech.buildrun.Agregador.de.Investimento.exceptions.InvestmentNotFoundException;
 import tech.buildrun.Agregador.de.Investimento.exceptions.UserNotFoundException;
 import tech.buildrun.Agregador.de.Investimento.repository.InvestmentRepository;
 import tech.buildrun.Agregador.de.Investimento.repository.UserRepository;
@@ -39,8 +40,7 @@ public class InvestmentService {
     }
 
     public List<ResponseInvestmentsDTO> getAllInvestments() {
-
-
+        
         return investmentRepository.findAll().stream().map(investment ->
                 new ResponseInvestmentsDTO(investment.getIdInvestment(), investment.getAmount(), investment.getUser().getUserId())).toList();
     }
@@ -51,7 +51,7 @@ public class InvestmentService {
             return getUser.get().getInvestments().stream().map(investment ->
                     new ResponseInvestmentsDTO(investment.getIdInvestment(), investment.getAmount(), investment.getUser().getUserId())).toList();
         } else {
-            throw new RuntimeException("Usuário não encontrado!");
+            throw new UserNotFoundException("Usuário não encontrado!");
         }
     }
 
@@ -61,7 +61,7 @@ public class InvestmentService {
         if(investmentExists) {
             investmentRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Investimento não encontrado!");
+            throw new InvestmentNotFoundException();
         }
     }
 
@@ -75,7 +75,7 @@ public class InvestmentService {
 
             investmentRepository.save(updatedInvestment);
         } else {
-            throw  new RuntimeException("Investimento não encontrado!");
+            throw  new InvestmentNotFoundException();
         }
 
     }
